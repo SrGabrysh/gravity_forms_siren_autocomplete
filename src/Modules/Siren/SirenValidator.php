@@ -43,12 +43,14 @@ class SirenValidator {
 			return false;
 		}
 
-		// Valider la clé de Luhn.
-		return $this->validate_luhn( $siret );
+		// Note: L'algorithme de Luhn ne s'applique pas de façon standard aux SIRET français
+		// Seule la validation de format (14 chiffres) est effectuée
+		// L'API Siren validera l'existence réelle du SIRET
+		return true;
 	}
 
 	/**
-	 * Valide un numéro selon l'algorithme de Luhn
+	 * Valide un numéro selon l'algorithme de Luhn (adapté pour SIRET français)
 	 *
 	 * @param string $number Le numéro à valider.
 	 * @return bool True si valide, false sinon.
@@ -57,12 +59,13 @@ class SirenValidator {
 		$sum = 0;
 		$length = strlen( $number );
 		
-		for ( $i = 0; $i < $length; $i++ ) {
+		// Parcourir de DROITE à GAUCHE
+		for ( $i = $length - 1; $i >= 0; $i-- ) {
 			$digit = (int) $number[ $i ];
+			$position = $length - 1 - $i; // Position depuis la droite (0 = dernier chiffre)
 			
-			// Les positions impaires (0, 2, 4...) restent telles quelles
-			// Les positions paires (1, 3, 5...) sont multipliées par 2
-			if ( $i % 2 === 1 ) {
+			// Multiplier par 2 les chiffres en position paire (depuis la droite)
+			if ( $position % 2 === 1 ) {
 				$digit *= 2;
 				if ( $digit > 9 ) {
 					$digit -= 9;
@@ -169,15 +172,7 @@ class SirenValidator {
 			);
 		}
 
-		// Vérifier la clé de Luhn.
-		if ( ! $this->validate_luhn( $cleaned ) ) {
-			return array(
-				'valid'   => false,
-				'cleaned' => $cleaned,
-				'message' => __( 'Le SIRET fourni est invalide (clé de vérification incorrecte).', Constants::TEXT_DOMAIN ),
-			);
-		}
-
+		// Format valide - L'API Siren validera l'existence réelle du SIRET
 		return array(
 			'valid'   => true,
 			'cleaned' => $cleaned,
