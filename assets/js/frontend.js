@@ -121,17 +121,21 @@
         success: (response) => {
           if (response.success && response.data) {
             this.fillFormFields(formId, response.data.data);
-            
+
             // Réinjecter les noms/prénoms formatés
             if (response.data.representant) {
               if (response.data.representant.prenom) {
-                $("#input_" + formId + "_7_3").val(response.data.representant.prenom);
+                $("#input_" + formId + "_7_3").val(
+                  response.data.representant.prenom
+                );
               }
               if (response.data.representant.nom) {
-                $("#input_" + formId + "_7_6").val(response.data.representant.nom);
+                $("#input_" + formId + "_7_6").val(
+                  response.data.representant.nom
+                );
               }
             }
-            
+
             this.showMessage(
               $message,
               response.data.message,
@@ -226,15 +230,17 @@
         "change keyup",
         function () {
           self.updateMentionsWithRepresentant(formId);
-          
+
           // Afficher un avertissement si modification après vérification SIRET
           const $form = $("#gform_" + formId);
-          const isVerified = $form.find('input[name="gf_siren_verified_' + formId + '"]').length > 0;
-          
+          const isVerified =
+            $form.find('input[name="gf_siren_verified_' + formId + '"]')
+              .length > 0;
+
           if (isVerified) {
             const $container = $form.find(".gf-siren-verify-container");
             const $message = $container.find(".gf-siren-message");
-            
+
             self.showMessage(
               $message,
               gfSirenData.messages.warning_representant_modified,

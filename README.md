@@ -1,6 +1,6 @@
 # Gravity Forms Siren Autocomplete
 
-**Version:** 1.0.24  
+**Version:** 1.0.25  
 **Auteur:** TB-Web  
 **Licence:** GPL v2 or later
 

@@ -74,7 +74,7 @@ class NameFormatter {
 		$cleaned = preg_replace( '/\s+/', ' ', $cleaned );
 
 		// Normaliser l'apostrophe ASCII vers l'apostrophe typographique.
-		$cleaned = str_replace( '\'', ''', $cleaned );
+		$cleaned = str_replace( "'", "'", $cleaned );
 
 		return $cleaned;
 	}
@@ -122,14 +122,14 @@ class NameFormatter {
 		}
 
 		// Gestion des apostrophes (O'Connor, d'Artagnan).
-		if ( strpos( $word, ''' ) !== false || strpos( $word, '\'' ) !== false ) {
+		if ( strpos( $word, '\'' ) !== false ) {
 			// Remplacer l'apostrophe ASCII par typographique si présente.
-			$word = str_replace( '\'', ''', $word );
+			$word = str_replace( '\'', '\'', $word );
 
-			$parts = explode( ''', $word );
+			$parts = explode( '\'', $word );
 
 			// Si c'est une particule (d', l'), la laisser en minuscule.
-			if ( in_array( mb_strtolower( $parts[0], 'UTF-8' ) . ''', self::$particules_francaises, true ) ) {
+			if ( in_array( mb_strtolower( $parts[0], 'UTF-8' ) . '\'', self::$particules_francaises, true ) ) {
 				$parts[0] = mb_strtolower( $parts[0], 'UTF-8' );
 				if ( isset( $parts[1] ) ) {
 					$parts[1] = self::format_segment( $parts[1] );
@@ -140,10 +140,10 @@ class NameFormatter {
 				foreach ( $parts as $part ) {
 					$formatted_parts[] = self::format_segment( $part );
 				}
-				return implode( ''', $formatted_parts );
+				return implode( '\'', $formatted_parts );
 			}
 
-			return implode( ''', $parts );
+			return implode( '\'', $parts );
 		}
 
 		// Cas normal : un seul segment.
@@ -215,4 +215,3 @@ class NameFormatter {
 		return $nom_formatted['value'] . ' ' . $prenom_formatted['value'];
 	}
 }
-
