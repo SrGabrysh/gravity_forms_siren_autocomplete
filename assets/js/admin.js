@@ -13,7 +13,6 @@
      */
     init: function () {
       this.bindEvents();
-      this.initTabs();
       this.autoLoadExistingMapping();
     },
 
@@ -37,25 +36,6 @@
 
       // Sélection de formulaire pour le mapping
       $(document).on("change", "#form_select", this.loadFormFields.bind(this));
-    },
-
-    /**
-     * Initialise les onglets
-     */
-    initTabs: function () {
-      $(".nav-tab").on("click", function (e) {
-        e.preventDefault();
-
-        const tabId = $(this).attr("href");
-
-        // Activer l'onglet
-        $(".nav-tab").removeClass("nav-tab-active");
-        $(this).addClass("nav-tab-active");
-
-        // Afficher le contenu
-        $(".tab-content").hide();
-        $(tabId).show();
-      });
     },
 
     /**

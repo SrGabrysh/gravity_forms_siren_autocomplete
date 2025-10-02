@@ -103,15 +103,13 @@ class SettingsPage {
 				<form method="post" action="">
 					<?php wp_nonce_field( 'gf_siren_save_settings', 'gf_siren_settings_nonce' ); ?>
 
-					<!-- Onglet Configuration générale -->
-					<div id="tab-general" class="tab-content" style="display:<?php echo 'general' === $active_tab ? 'block' : 'none'; ?>;">
+					<?php if ( 'general' === $active_tab ) : ?>
+						<!-- Onglet Configuration générale -->
 						<?php $this->render_general_tab( $settings ); ?>
-					</div>
-
-					<!-- Onglet Mapping -->
-					<div id="tab-mapping" class="tab-content" style="display:<?php echo 'mapping' === $active_tab ? 'block' : 'none'; ?>;">
+					<?php elseif ( 'mapping' === $active_tab ) : ?>
+						<!-- Onglet Mapping -->
 						<?php $this->render_mapping_tab( $settings ); ?>
-					</div>
+					<?php endif; ?>
 
 					<p class="submit">
 						<button type="submit" name="gf_siren_save" class="button button-primary">
