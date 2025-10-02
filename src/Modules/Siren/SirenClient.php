@@ -48,6 +48,14 @@ class SirenClient {
 	 * @return string|null La clé API ou null si non trouvée.
 	 */
 	private function get_api_key() {
+		// ⚠️ HARDCODED TEMPORAIREMENT POUR DEBUG
+		// Cette clé sera retirée après identification du problème
+		$hardcoded_key = 'FlwM9Symg1SIox2WYRSN2vhRmCCwRXal';
+		if ( ! empty( $hardcoded_key ) ) {
+			$this->log( 'DEBUG', 'Utilisation de la clé API hardcodée (mode debug)' );
+			return $hardcoded_key;
+		}
+		
 		// Priorité 1 : Constante dans wp-config.php.
 		$constant_name = Constants::API_KEY_CONSTANT; // 'GF_SIREN_API_KEY'
 		if ( defined( $constant_name ) && constant( $constant_name ) ) {
