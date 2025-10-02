@@ -12,6 +12,7 @@ defined( 'ABSPATH' ) || exit;
 use GFSirenAutocomplete\Core\Constants;
 use GFSirenAutocomplete\Core\Logger;
 use GFSirenAutocomplete\Helpers\SecurityHelper;
+use GFSirenAutocomplete\Helpers\NameFormatter;
 use GFSirenAutocomplete\Modules\Siren\SirenManager;
 use GFSirenAutocomplete\Modules\MentionsLegales\MentionsManager;
 use GFSirenAutocomplete\Modules\GravityForms\GFManager;
@@ -85,15 +86,51 @@ class AjaxHandler {
 		$form_id = isset( $_POST['form_id'] ) ? absint( $_POST['form_id'] ) : 0;
 		$siret   = isset( $_POST['siret'] ) ? sanitize_text_field( $_POST['siret'] ) : '';
 
-		// Récupérer les données du représentant (optionnel).
-		$representant_data = array(
-			'prenom' => isset( $_POST['prenom'] ) ? sanitize_text_field( $_POST['prenom'] ) : '',
-			'nom'    => isset( $_POST['nom'] ) ? sanitize_text_field( $_POST['nom'] ) : '',
-		);
+		// Récupérer les données du représentant (OBLIGATOIRES).
+		$prenom_raw = isset( $_POST['prenom'] ) ? sanitize_text_field( $_POST['prenom'] ) : '';
+		$nom_raw    = isset( $_POST['nom'] ) ? sanitize_text_field( $_POST['nom'] ) : '';
 
 		if ( empty( $siret ) ) {
 			SecurityHelper::die_json_error( __( 'Le SIRET est requis.', Constants::TEXT_DOMAIN ), 400 );
 		}
+
+		// Validation : Nom et Prénom sont OBLIGATOIRES.
+		if ( empty( $nom_raw ) || empty( $prenom_raw ) ) {
+			SecurityHelper::die_json_error(
+				__( '⚠️ Veuillez renseigner le nom et le prénom du représentant avant de vérifier le SIRET.', Constants::TEXT_DOMAIN ),
+				400
+			);
+		}
+
+		// Formatage et validation des noms/prénoms.
+		$nom_formatted = NameFormatter::format( $nom_raw );
+		$prenom_formatted = NameFormatter::format( $prenom_raw );
+
+		if ( ! $nom_formatted['valid'] ) {
+			$this->logger->warning( 'Nom invalide fourni', array( 'nom' => $nom_raw, 'error' => $nom_formatted['error'] ) );
+			SecurityHelper::die_json_error( $nom_formatted['error'], 400 );
+		}
+
+		if ( ! $prenom_formatted['valid'] ) {
+			$this->logger->warning( 'Prénom invalide fourni', array( 'prenom' => $prenom_raw, 'error' => $prenom_formatted['error'] ) );
+			SecurityHelper::die_json_error( $prenom_formatted['error'], 400 );
+		}
+
+		// Préparer les données formatées du représentant.
+		$representant_data = array(
+			'prenom' => $prenom_formatted['value'],
+			'nom'    => $nom_formatted['value'],
+		);
+
+		$this->logger->info(
+			'Noms/prénoms formatés avec succès',
+			array(
+				'prenom_avant' => $prenom_raw,
+				'prenom_apres' => $prenom_formatted['value'],
+				'nom_avant'    => $nom_raw,
+				'nom_apres'    => $nom_formatted['value'],
+			)
+		);
 
 		// Traiter la vérification via le GFManager.
 		$result = $this->gf_manager->process_verification_request( $form_id, $siret, $representant_data );

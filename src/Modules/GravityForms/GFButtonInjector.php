@@ -152,14 +152,17 @@ class GFButtonInjector {
 	 */
 	private function get_frontend_messages() {
 		return array(
-			'verifying'          => __( 'Vérification en cours...', Constants::TEXT_DOMAIN ),
-			'success'            => __( 'Entreprise trouvée : %s', Constants::TEXT_DOMAIN ),
-			'error_invalid'      => __( 'Le SIRET fourni est invalide (format ou clé de vérification incorrecte).', Constants::TEXT_DOMAIN ),
-			'error_not_found'    => __( 'Aucune entreprise trouvée avec ce SIRET.', Constants::TEXT_DOMAIN ),
-			'error_api'          => __( 'Erreur lors de la vérification. Veuillez réessayer.', Constants::TEXT_DOMAIN ),
-			'error_timeout'      => __( 'La vérification a pris trop de temps. Veuillez réessayer.', Constants::TEXT_DOMAIN ),
-			'warning_inactive'   => __( 'Cette entreprise est inactive.', Constants::TEXT_DOMAIN ),
-			'warning_modified'   => __( 'Vous avez modifié les données vérifiées.', Constants::TEXT_DOMAIN ),
+			'verifying'                    => __( 'Vérification en cours...', Constants::TEXT_DOMAIN ),
+			'success'                      => __( 'Entreprise trouvée : %s', Constants::TEXT_DOMAIN ),
+			'error_invalid'                => __( 'Le SIRET fourni est invalide (format ou clé de vérification incorrecte).', Constants::TEXT_DOMAIN ),
+			'error_not_found'              => __( 'Aucune entreprise trouvée avec ce SIRET.', Constants::TEXT_DOMAIN ),
+			'error_api'                    => __( 'Erreur lors de la vérification. Veuillez réessayer.', Constants::TEXT_DOMAIN ),
+			'error_timeout'                => __( 'La vérification a pris trop de temps. Veuillez réessayer.', Constants::TEXT_DOMAIN ),
+			'error_representant_required'  => __( '⚠️ Veuillez renseigner le nom et le prénom du représentant avant de vérifier le SIRET.', Constants::TEXT_DOMAIN ),
+			'error_representant_invalid'   => __( 'Les chiffres ne sont pas autorisés dans les noms et prénoms.', Constants::TEXT_DOMAIN ),
+			'warning_inactive'             => __( 'Cette entreprise est inactive.', Constants::TEXT_DOMAIN ),
+			'warning_modified'             => __( 'Vous avez modifié les données vérifiées.', Constants::TEXT_DOMAIN ),
+			'warning_representant_modified' => __( 'Vous avez modifié les données du représentant.', Constants::TEXT_DOMAIN ),
 		);
 	}
 }

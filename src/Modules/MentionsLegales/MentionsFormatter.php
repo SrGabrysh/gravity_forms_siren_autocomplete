@@ -38,11 +38,11 @@ class MentionsFormatter {
 		$siren_formate = DataHelper::format_siren( $siren );
 		$ville_rcs    = MentionsHelper::get_ville( $etablissement_siege );
 
-		// Représentant légal.
+		// Représentant légal (format : Nom Prénom).
 		$prenom_representant = $representant_data['prenom'] ?? '';
 		$nom_representant    = $representant_data['nom'] ?? '';
 		$representant        = ! empty( $prenom_representant ) && ! empty( $nom_representant )
-			? "{$prenom_representant} {$nom_representant}"
+			? "{$nom_representant} {$prenom_representant}"
 			: '{REPRESENTANT}';
 
 		// Construction des mentions.

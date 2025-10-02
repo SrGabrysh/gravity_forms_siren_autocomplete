@@ -76,6 +76,31 @@
       const prenomValue = $("#input_" + formId + "_7_3").val() || "";
       const nomValue = $("#input_" + formId + "_7_6").val() || "";
 
+      // Validation : Nom et Prénom sont OBLIGATOIRES
+      if (
+        !nomValue ||
+        nomValue.trim() === "" ||
+        !prenomValue ||
+        prenomValue.trim() === ""
+      ) {
+        this.showMessage(
+          $message,
+          gfSirenData.messages.error_representant_required,
+          "error"
+        );
+        return;
+      }
+
+      // Validation : Refuser les chiffres dans nom et prénom
+      if (/\d/.test(nomValue) || /\d/.test(prenomValue)) {
+        this.showMessage(
+          $message,
+          gfSirenData.messages.error_representant_invalid,
+          "error"
+        );
+        return;
+      }
+
       // Désactiver le bouton et afficher le loader
       $button.prop("disabled", true);
       $loader.show();
@@ -96,6 +121,17 @@
         success: (response) => {
           if (response.success && response.data) {
             this.fillFormFields(formId, response.data.data);
+            
+            // Réinjecter les noms/prénoms formatés
+            if (response.data.representant) {
+              if (response.data.representant.prenom) {
+                $("#input_" + formId + "_7_3").val(response.data.representant.prenom);
+              }
+              if (response.data.representant.nom) {
+                $("#input_" + formId + "_7_6").val(response.data.representant.nom);
+              }
+            }
+            
             this.showMessage(
               $message,
               response.data.message,
@@ -172,7 +208,8 @@
 
       if ($mentionsField.length && prenomValue && nomValue) {
         let mentions = $mentionsField.val();
-        const representant = prenomValue + " " + nomValue;
+        // Format : "Nom Prénom" (selon spécification)
+        const representant = nomValue + " " + prenomValue;
 
         // Remplacer {REPRESENTANT} par le nom complet
         mentions = mentions.replace("{REPRESENTANT}", representant);
@@ -189,6 +226,21 @@
         "change keyup",
         function () {
           self.updateMentionsWithRepresentant(formId);
+          
+          // Afficher un avertissement si modification après vérification SIRET
+          const $form = $("#gform_" + formId);
+          const isVerified = $form.find('input[name="gf_siren_verified_' + formId + '"]').length > 0;
+          
+          if (isVerified) {
+            const $container = $form.find(".gf-siren-verify-container");
+            const $message = $container.find(".gf-siren-message");
+            
+            self.showMessage(
+              $message,
+              gfSirenData.messages.warning_representant_modified,
+              "warning"
+            );
+          }
         }
       );
     },

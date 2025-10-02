@@ -142,7 +142,7 @@ class GFManager {
 
 		$mapped_data = $this->field_mapper->map_data_to_fields( $company_data, $mapping, $mentions_legales );
 
-		// Étape 4 : Préparer la réponse.
+		// Étape 4 : Préparer la réponse (incluant les noms/prénoms formatés pour réinjection).
 		$response = array(
 			'success'          => true,
 			'data'             => $mapped_data,
@@ -152,6 +152,11 @@ class GFManager {
 			'message'          => sprintf(
 				__( 'Entreprise trouvée : %s', 'gravity-forms-siren-autocomplete' ),
 				$company_data['denomination'] ?? ''
+			),
+			// Ajouter les noms/prénoms formatés pour réinjection dans les champs
+			'representant'     => array(
+				'nom'    => $representant_data['nom'] ?? '',
+				'prenom' => $representant_data['prenom'] ?? '',
 			),
 		);
 
