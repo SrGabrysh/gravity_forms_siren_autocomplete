@@ -43,14 +43,15 @@ class SirenValidator {
 			return false;
 		}
 
-		// Note: L'algorithme de Luhn ne s'applique pas de façon standard aux SIRET français
-		// Seule la validation de format (14 chiffres) est effectuée
-		// L'API Siren validera l'existence réelle du SIRET
-		return true;
+		// Vérifier la clé de contrôle avec l'algorithme de Luhn
+		return $this->validate_luhn( $siret );
 	}
 
 	/**
-	 * Valide un numéro selon l'algorithme de Luhn (adapté pour SIRET français)
+	 * Valide un numéro selon l'algorithme de Luhn (pour SIRET français)
+	 * 
+	 * Principe : parcourir de gauche à droite, doubler un chiffre sur deux
+	 * en commençant par l'AVANT-DERNIER (distance depuis la droite = paire).
 	 *
 	 * @param string $number Le numéro à valider.
 	 * @return bool True si valide, false sinon.
@@ -59,13 +60,13 @@ class SirenValidator {
 		$sum = 0;
 		$length = strlen( $number );
 		
-		// Parcourir de DROITE à GAUCHE
-		for ( $i = $length - 1; $i >= 0; $i-- ) {
+		// Parcourir de GAUCHE à DROITE (index i de 0 à length-1)
+		for ( $i = 0; $i < $length; $i++ ) {
 			$digit = (int) $number[ $i ];
-			$position = $length - 1 - $i; // Position depuis la droite (0 = dernier chiffre)
 			
-			// Multiplier par 2 les chiffres en position paire (depuis la droite)
-			if ( $position % 2 === 1 ) {
+			// Doubler les chiffres dont la distance depuis la droite est PAIRE
+			// (14 - i) % 2 == 0 signifie : l'avant-dernier, puis un sur deux en remontant
+			if ( ( $length - $i ) % 2 === 0 ) {
 				$digit *= 2;
 				if ( $digit > 9 ) {
 					$digit -= 9;
@@ -172,7 +173,15 @@ class SirenValidator {
 			);
 		}
 
-		// Format valide - L'API Siren validera l'existence réelle du SIRET
+		// Vérifier la clé de contrôle avec l'algorithme de Luhn.
+		if ( ! $this->validate_luhn( $cleaned ) ) {
+			return array(
+				'valid'   => false,
+				'cleaned' => $cleaned,
+				'message' => __( 'Le SIRET fourni est invalide (clé de vérification incorrecte).', Constants::TEXT_DOMAIN ),
+			);
+		}
+
 		return array(
 			'valid'   => true,
 			'cleaned' => $cleaned,
