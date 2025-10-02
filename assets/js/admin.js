@@ -64,12 +64,12 @@
     autoLoadExistingMapping: function () {
       // Vérifier si un formulaire avec un mapping existe (ex: formulaire 1)
       const $formSelect = $("#form_select");
-      
+
       // Si le select de formulaire a au moins 2 options (l'option vide + un formulaire)
       if ($formSelect.find("option").length > 1) {
         // Sélectionner le premier formulaire disponible (index 1)
         const firstFormId = $formSelect.find("option").eq(1).val();
-        
+
         if (firstFormId) {
           $formSelect.val(firstFormId);
           // Afficher le conteneur des champs de mapping

@@ -13,6 +13,8 @@ use GFSirenAutocomplete\Core\Constants;
 use GFSirenAutocomplete\Core\Logger;
 use GFSirenAutocomplete\Modules\Siren\SirenManager;
 use GFSirenAutocomplete\Modules\GravityForms\GFManager;
+use GFSirenAutocomplete\Modules\Tracking\TrackingManager;
+use GFSirenAutocomplete\Modules\Tracking\TrackingAdmin;
 
 /**
  * Classe d'orchestration de l'interface d'administration
@@ -62,21 +64,37 @@ class AdminManager {
 	private $ajax_handler;
 
 	/**
+	 * Instance du tracking manager
+	 *
+	 * @var TrackingManager
+	 */
+	private $tracking_manager;
+
+	/**
 	 * Constructeur
 	 *
-	 * @param SirenManager $siren_manager Instance du Siren Manager.
-	 * @param GFManager    $gf_manager Instance du GF Manager.
-	 * @param Logger       $logger Instance du logger.
+	 * @param SirenManager    $siren_manager Instance du Siren Manager.
+	 * @param GFManager       $gf_manager Instance du GF Manager.
+	 * @param Logger          $logger Instance du logger.
+	 * @param TrackingManager $tracking_manager Instance du Tracking Manager.
 	 */
-	public function __construct( SirenManager $siren_manager, GFManager $gf_manager, Logger $logger ) {
-		$this->siren_manager = $siren_manager;
-		$this->gf_manager    = $gf_manager;
-		$this->logger        = $logger;
+	public function __construct( SirenManager $siren_manager, GFManager $gf_manager, Logger $logger, TrackingManager $tracking_manager = null ) {
+		$this->siren_manager    = $siren_manager;
+		$this->gf_manager       = $gf_manager;
+		$this->logger           = $logger;
+		$this->tracking_manager = $tracking_manager;
 
 		// Initialiser les composants admin.
 		$this->settings_page = new SettingsPage( $gf_manager->get_field_mapper() );
 		$this->logs_viewer   = new LogsViewer( $logger );
 		$this->ajax_handler  = new AjaxHandler( $siren_manager, $gf_manager, $logger );
+
+		// Injecter le tracking admin dans la page de settings.
+		if ( $tracking_manager ) {
+			$tracking_admin = new TrackingAdmin( $tracking_manager->get_storage() );
+			$tracking_admin->init_hooks(); // Initialiser les hooks pour les exports/suppressions.
+			$this->settings_page->set_tracking_admin( $tracking_admin );
+		}
 	}
 
 	/**

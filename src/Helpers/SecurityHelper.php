@@ -149,5 +149,15 @@ class SecurityHelper {
 		// Vérifier que la clé n'est pas vide et a une longueur minimale.
 		return ! empty( $api_key ) && strlen( $api_key ) >= 10;
 	}
+
+	/**
+	 * Vérifie un nonce admin referer et termine la requête si invalide
+	 *
+	 * @param string $action L'action du nonce.
+	 * @param string $query_arg Le nom du paramètre de nonce (par défaut: '_wpnonce').
+	 */
+	public static function check_admin_referer( $action, $query_arg = '_wpnonce' ) {
+		check_admin_referer( $action, $query_arg );
+	}
 }
 

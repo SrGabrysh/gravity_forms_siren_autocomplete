@@ -14,6 +14,8 @@ use GFSirenAutocomplete\Admin\AjaxHandler;
 use GFSirenAutocomplete\Modules\Siren\SirenManager;
 use GFSirenAutocomplete\Modules\MentionsLegales\MentionsManager;
 use GFSirenAutocomplete\Modules\GravityForms\GFManager;
+use GFSirenAutocomplete\Modules\Tracking\TrackingManager;
+use GFSirenAutocomplete\Modules\Tracking\TrackingStorage;
 
 /**
  * Classe principale du plugin
@@ -30,7 +32,7 @@ class Plugin {
 	/**
 	 * Version du plugin
 	 */
-	const VERSION = '1.0.23';
+	const VERSION = '1.0.31';
 
 	/**
 	 * Instance du logger
@@ -66,6 +68,13 @@ class Plugin {
 	 * @var AdminManager
 	 */
 	private $admin_manager;
+
+	/**
+	 * Instance du Tracking Manager
+	 *
+	 * @var TrackingManager
+	 */
+	private $tracking_manager;
 
 	/**
 	 * Constructeur privé (Singleton)
@@ -114,6 +123,10 @@ class Plugin {
 
 		// Module Gravity Forms.
 		$this->gf_manager = new GFManager( $this->siren_manager, $this->mentions_manager, $this->logger );
+
+		// Module Tracking (toujours actif).
+		$tracking_storage = new TrackingStorage( $this->logger );
+		$this->tracking_manager = new TrackingManager( $tracking_storage, $this->logger );
 	}
 
 	/**
@@ -129,7 +142,7 @@ class Plugin {
 	 * Initialisation de l'administration
 	 */
 	private function init_admin() {
-		$this->admin_manager = new AdminManager( $this->siren_manager, $this->gf_manager, $this->logger );
+		$this->admin_manager = new AdminManager( $this->siren_manager, $this->gf_manager, $this->logger, $this->tracking_manager );
 		$this->admin_manager->init_hooks();
 	}
 
@@ -143,6 +156,9 @@ class Plugin {
 
 		// Initialiser les hooks Gravity Forms.
 		$this->gf_manager->init_hooks();
+
+		// Initialiser les hooks du Tracking.
+		$this->tracking_manager->init_hooks();
 	}
 
 	/**
@@ -237,10 +253,15 @@ class Plugin {
 		$logger = Logger::get_instance();
 		$logger->create_table();
 
+		// Créer la table de tracking.
+		$tracking_storage = new TrackingStorage( $logger );
+		$tracking_storage->create_table();
+
 		// Créer les options par défaut.
 		$default_settings = array(
 			'cache_duration' => Constants::CACHE_DURATION,
 			'form_mappings'  => array(),
+			'tracked_forms'  => array(), // Liste des formulaires à tracker.
 		);
 
 		add_option( Constants::SETTINGS_OPTION, $default_settings );

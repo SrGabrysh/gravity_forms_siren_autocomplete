@@ -85,6 +85,11 @@ class Constants {
 	const LOGS_TABLE = 'gf_siren_logs';
 
 	/**
+	 * Nom de la table de tracking
+	 */
+	const TRACKING_TABLE = 'gf_siren_tracking';
+
+	/**
 	 * Durée de conservation des logs en jours
 	 */
 	const LOGS_RETENTION_DAYS = 90;

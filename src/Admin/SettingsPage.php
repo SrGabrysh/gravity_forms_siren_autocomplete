@@ -13,6 +13,7 @@ use GFSirenAutocomplete\Core\Constants;
 use GFSirenAutocomplete\Helpers\SecurityHelper;
 use GFSirenAutocomplete\Helpers\DataHelper;
 use GFSirenAutocomplete\Modules\GravityForms\GFFieldMapper;
+use GFSirenAutocomplete\Modules\Tracking\TrackingAdmin;
 
 /**
  * Classe de gestion de la page de configuration
@@ -27,12 +28,29 @@ class SettingsPage {
 	private $field_mapper;
 
 	/**
+	 * Instance du tracking admin
+	 *
+	 * @var TrackingAdmin
+	 */
+	private $tracking_admin;
+
+	/**
 	 * Constructeur
 	 *
 	 * @param GFFieldMapper $field_mapper Instance du mapper.
 	 */
 	public function __construct( GFFieldMapper $field_mapper ) {
 		$this->field_mapper = $field_mapper;
+		// Le tracking_admin sera injecté plus tard via setter.
+	}
+
+	/**
+	 * Définit l'instance du tracking admin
+	 *
+	 * @param TrackingAdmin $tracking_admin Instance du tracking admin.
+	 */
+	public function set_tracking_admin( TrackingAdmin $tracking_admin ) {
+		$this->tracking_admin = $tracking_admin;
 	}
 
 	/**
@@ -50,6 +68,9 @@ class SettingsPage {
 		// Récupérer les paramètres actuels.
 		$settings = get_option( Constants::SETTINGS_OPTION, array() );
 
+		// Déterminer l'onglet actif.
+		$active_tab = sanitize_text_field( $_GET['tab'] ?? 'general' );
+
 		?>
 		<div class="wrap gf-siren-settings">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
@@ -57,29 +78,48 @@ class SettingsPage {
 			<?php settings_errors( 'gf_siren_messages' ); ?>
 
 			<nav class="nav-tab-wrapper">
-				<a href="#tab-general" class="nav-tab nav-tab-active"><?php esc_html_e( 'Configuration générale', Constants::TEXT_DOMAIN ); ?></a>
-				<a href="#tab-mapping" class="nav-tab"><?php esc_html_e( 'Mapping des champs', Constants::TEXT_DOMAIN ); ?></a>
+				<a href="?page=<?php echo esc_attr( Constants::ADMIN_MENU_SLUG ); ?>&tab=general" 
+					class="nav-tab <?php echo 'general' === $active_tab ? 'nav-tab-active' : ''; ?>">
+					<?php esc_html_e( 'Configuration générale', Constants::TEXT_DOMAIN ); ?>
+				</a>
+				<a href="?page=<?php echo esc_attr( Constants::ADMIN_MENU_SLUG ); ?>&tab=mapping" 
+					class="nav-tab <?php echo 'mapping' === $active_tab ? 'nav-tab-active' : ''; ?>">
+					<?php esc_html_e( 'Mapping des champs', Constants::TEXT_DOMAIN ); ?>
+				</a>
+				<a href="?page=<?php echo esc_attr( Constants::ADMIN_MENU_SLUG ); ?>&tab=tracking" 
+					class="nav-tab <?php echo 'tracking' === $active_tab ? 'nav-tab-active' : ''; ?>">
+					<?php esc_html_e( 'Suivi des soumissions', Constants::TEXT_DOMAIN ); ?>
+				</a>
 			</nav>
 
-			<form method="post" action="">
-				<?php wp_nonce_field( 'gf_siren_save_settings', 'gf_siren_settings_nonce' ); ?>
+			<?php if ( 'tracking' === $active_tab ) : ?>
+				<!-- Onglet Tracking (sans formulaire) -->
+				<?php
+				if ( $this->tracking_admin ) {
+					$this->tracking_admin->render_tracking_tab();
+				}
+				?>
+			<?php else : ?>
+				<form method="post" action="">
+					<?php wp_nonce_field( 'gf_siren_save_settings', 'gf_siren_settings_nonce' ); ?>
 
-				<!-- Onglet Configuration générale -->
-				<div id="tab-general" class="tab-content" style="display:block;">
-					<?php $this->render_general_tab( $settings ); ?>
-				</div>
+					<!-- Onglet Configuration générale -->
+					<div id="tab-general" class="tab-content" style="display:<?php echo 'general' === $active_tab ? 'block' : 'none'; ?>;">
+						<?php $this->render_general_tab( $settings ); ?>
+					</div>
 
-				<!-- Onglet Mapping -->
-				<div id="tab-mapping" class="tab-content" style="display:none;">
-					<?php $this->render_mapping_tab( $settings ); ?>
-				</div>
+					<!-- Onglet Mapping -->
+					<div id="tab-mapping" class="tab-content" style="display:<?php echo 'mapping' === $active_tab ? 'block' : 'none'; ?>;">
+						<?php $this->render_mapping_tab( $settings ); ?>
+					</div>
 
-				<p class="submit">
-					<button type="submit" name="gf_siren_save" class="button button-primary">
-						<?php esc_html_e( 'Enregistrer les paramètres', Constants::TEXT_DOMAIN ); ?>
-					</button>
-				</p>
-			</form>
+					<p class="submit">
+						<button type="submit" name="gf_siren_save" class="button button-primary">
+							<?php esc_html_e( 'Enregistrer les paramètres', Constants::TEXT_DOMAIN ); ?>
+						</button>
+					</p>
+				</form>
+			<?php endif; ?>
 		</div>
 		<?php
 	}
@@ -148,6 +188,38 @@ class SettingsPage {
 								<?php esc_html_e( 'Vider le cache maintenant', Constants::TEXT_DOMAIN ); ?>
 							</button>
 							<span id="gf-siren-cache-result"></span>
+						</p>
+					</td>
+				</tr>
+
+				<!-- Formulaires à tracker -->
+				<tr>
+					<th scope="row">
+						<label for="tracked_forms"><?php esc_html_e( 'Formulaires à tracker', Constants::TEXT_DOMAIN ); ?></label>
+					</th>
+					<td>
+						<?php
+						$forms = $this->get_gravity_forms_list();
+						$tracked_forms = $settings['tracked_forms'] ?? array();
+						
+						if ( empty( $forms ) ) {
+							?>
+							<p class="description"><?php esc_html_e( 'Aucun formulaire Gravity Forms disponible.', Constants::TEXT_DOMAIN ); ?></p>
+							<?php
+						} else {
+							foreach ( $forms as $form ) {
+								$checked = in_array( (int) $form['id'], $tracked_forms, true );
+								?>
+								<label style="display:block; margin-bottom:5px;">
+									<input type="checkbox" name="gf_siren[tracked_forms][]" value="<?php echo esc_attr( $form['id'] ); ?>" <?php checked( $checked ); ?>>
+									<?php echo esc_html( $form['title'] . ' (ID: ' . $form['id'] . ')' ); ?>
+								</label>
+								<?php
+							}
+						}
+						?>
+						<p class="description">
+							<?php esc_html_e( 'Sélectionnez les formulaires dont vous souhaitez suivre les soumissions.', Constants::TEXT_DOMAIN ); ?>
 						</p>
 					</td>
 				</tr>
@@ -283,6 +355,13 @@ class SettingsPage {
 		// Sauvegarder la durée du cache.
 		if ( isset( $post_data['cache_duration'] ) ) {
 			$settings['cache_duration'] = absint( $post_data['cache_duration'] );
+		}
+
+		// Sauvegarder les formulaires à tracker.
+		if ( isset( $post_data['tracked_forms'] ) && is_array( $post_data['tracked_forms'] ) ) {
+			$settings['tracked_forms'] = array_map( 'absint', $post_data['tracked_forms'] );
+		} else {
+			$settings['tracked_forms'] = array();
 		}
 
 		// Sauvegarder le mapping (si formulaire sélectionné).
