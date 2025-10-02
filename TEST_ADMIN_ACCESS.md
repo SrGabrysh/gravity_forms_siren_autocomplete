@@ -1,6 +1,7 @@
 # 🔍 DIAGNOSTIC - Accès Page Admin
 
 ## Problème
+
 La page `https://tb-formation.fr/wp-admin/admin.php?page=gf-siren-settings` renvoie une erreur 403 Forbidden.
 
 ## Tests de diagnostic
@@ -49,6 +50,7 @@ echo "Has manage_options: " . (current_user_can("manage_options") ? "YES" : "NO"
 ### Test 5: Accéder directement avec admin
 
 Si vous êtes admin WordPress, essayez :
+
 - URL alternative: `https://tb-formation.fr/wp-admin/admin.php?page=gf-siren-settings&debug=1`
 - Vérifier les logs d'erreurs PHP: `tail -50 /sites/tb-formation.fr/files/wp-content/debug.log`
 
@@ -64,8 +66,7 @@ const ADMIN_CAPABILITY = 'manage_options'; // Au lieu de 'gravityforms_edit_form
 Ou ajouter une vérification dans `AdminManager::add_admin_menu()` :
 
 ```php
-$capability = current_user_can('gravityforms_edit_forms') 
-    ? 'gravityforms_edit_forms' 
+$capability = current_user_can('gravityforms_edit_forms')
+    ? 'gravityforms_edit_forms'
     : 'manage_options';
 ```
-

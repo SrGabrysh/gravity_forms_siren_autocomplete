@@ -1,7 +1,7 @@
 /**
  * TESTS FRONTEND À EXÉCUTER DANS LA CONSOLE DU NAVIGATEUR (DevTools)
  * URL: https://tb-formation.fr/test-de-positionnement/
- * 
+ *
  * Copiez-collez ces tests un par un dans la console Chrome/Firefox
  */
 
@@ -9,64 +9,64 @@
 // TEST 1: Vérifier que jQuery est chargé
 // ========================================
 console.log("=== TEST 1: jQuery ===");
-if (typeof jQuery !== 'undefined') {
-    console.log("✅ jQuery version:", jQuery.fn.jquery);
+if (typeof jQuery !== "undefined") {
+  console.log("✅ jQuery version:", jQuery.fn.jquery);
 } else {
-    console.log("❌ jQuery non chargé");
+  console.log("❌ jQuery non chargé");
 }
 
 // ========================================
 // TEST 2: Vérifier que le script frontend.js est chargé
 // ========================================
 console.log("\n=== TEST 2: Script frontend.js ===");
-if (typeof GFSirenFrontend !== 'undefined') {
-    console.log("✅ GFSirenFrontend chargé");
-    console.log("Méthodes:", Object.keys(GFSirenFrontend));
+if (typeof GFSirenFrontend !== "undefined") {
+  console.log("✅ GFSirenFrontend chargé");
+  console.log("Méthodes:", Object.keys(GFSirenFrontend));
 } else {
-    console.log("❌ GFSirenFrontend non chargé");
+  console.log("❌ GFSirenFrontend non chargé");
 }
 
 // ========================================
 // TEST 3: Vérifier les données localisées
 // ========================================
 console.log("\n=== TEST 3: Données gfSirenData ===");
-if (typeof gfSirenData !== 'undefined') {
-    console.log("✅ gfSirenData chargé");
-    console.log("AJAX URL:", gfSirenData.ajax_url);
-    console.log("Form ID:", gfSirenData.form_id);
-    console.log("Nonce:", gfSirenData.nonce);
-    console.log("Messages:", gfSirenData.messages);
+if (typeof gfSirenData !== "undefined") {
+  console.log("✅ gfSirenData chargé");
+  console.log("AJAX URL:", gfSirenData.ajax_url);
+  console.log("Form ID:", gfSirenData.form_id);
+  console.log("Nonce:", gfSirenData.nonce);
+  console.log("Messages:", gfSirenData.messages);
 } else {
-    console.log("❌ gfSirenData non chargé");
+  console.log("❌ gfSirenData non chargé");
 }
 
 // ========================================
 // TEST 4: Vérifier la présence du bouton
 // ========================================
 console.log("\n=== TEST 4: Bouton Vérifier SIRET ===");
-const $button = jQuery('.gf-siren-verify-button');
+const $button = jQuery(".gf-siren-verify-button");
 if ($button.length > 0) {
-    console.log("✅ Bouton trouvé");
-    console.log("  - Form ID:", $button.data('form-id'));
-    console.log("  - Field ID:", $button.data('field-id'));
-    console.log("  - Nonce:", $button.data('nonce'));
-    console.log("  - Texte:", $button.text());
+  console.log("✅ Bouton trouvé");
+  console.log("  - Form ID:", $button.data("form-id"));
+  console.log("  - Field ID:", $button.data("field-id"));
+  console.log("  - Nonce:", $button.data("nonce"));
+  console.log("  - Texte:", $button.text());
 } else {
-    console.log("❌ Bouton non trouvé");
-    console.log("  Vérifier si le formulaire ID 1 est présent");
+  console.log("❌ Bouton non trouvé");
+  console.log("  Vérifier si le formulaire ID 1 est présent");
 }
 
 // ========================================
 // TEST 5: Vérifier le champ SIRET
 // ========================================
 console.log("\n=== TEST 5: Champ SIRET ===");
-const $siretField = jQuery('#input_1_1');
+const $siretField = jQuery("#input_1_1");
 if ($siretField.length > 0) {
-    console.log("✅ Champ SIRET trouvé (ID: input_1_1)");
-    console.log("  - Type:", $siretField.attr('type'));
-    console.log("  - Valeur actuelle:", $siretField.val());
+  console.log("✅ Champ SIRET trouvé (ID: input_1_1)");
+  console.log("  - Type:", $siretField.attr("type"));
+  console.log("  - Valeur actuelle:", $siretField.val());
 } else {
-    console.log("❌ Champ SIRET non trouvé");
+  console.log("❌ Champ SIRET non trouvé");
 }
 
 // ========================================
@@ -78,17 +78,19 @@ console.log("jQuery('#input_1_1').val('83317704900017');");
 console.log("Puis cliquez sur le bouton:");
 console.log("jQuery('.gf-siren-verify-button').click();");
 console.log("\nOu exécutez tout d'un coup:");
-console.log("jQuery('#input_1_1').val('83317704900017'); jQuery('.gf-siren-verify-button').click();");
+console.log(
+  "jQuery('#input_1_1').val('83317704900017'); jQuery('.gf-siren-verify-button').click();"
+);
 
 // ========================================
 // TEST 7: Vérifier les événements attachés
 // ========================================
 console.log("\n=== TEST 7: Événements attachés ===");
-const buttonEvents = jQuery._data($button[0], 'events');
+const buttonEvents = jQuery._data($button[0], "events");
 if (buttonEvents) {
-    console.log("✅ Événements sur le bouton:", Object.keys(buttonEvents));
+  console.log("✅ Événements sur le bouton:", Object.keys(buttonEvents));
 } else {
-    console.log("❌ Aucun événement attaché au bouton");
+  console.log("❌ Aucun événement attaché au bouton");
 }
 
 // ========================================
@@ -125,10 +127,10 @@ jQuery.ajax({
 console.log("\n=== TEST 9: Styles CSS ===");
 const buttonStyle = window.getComputedStyle($button[0]);
 if (buttonStyle) {
-    console.log("✅ Styles du bouton:");
-    console.log("  - Display:", buttonStyle.display);
-    console.log("  - Visibility:", buttonStyle.visibility);
-    console.log("  - Background:", buttonStyle.backgroundColor);
+  console.log("✅ Styles du bouton:");
+  console.log("  - Display:", buttonStyle.display);
+  console.log("  - Visibility:", buttonStyle.visibility);
+  console.log("  - Background:", buttonStyle.backgroundColor);
 }
 
 // ========================================
@@ -138,4 +140,3 @@ console.log("\n" + "=".repeat(50));
 console.log("RÉSUMÉ DES TESTS");
 console.log("=".repeat(50));
 console.log("Copiez les résultats ci-dessus et envoyez-les pour analyse.");
-

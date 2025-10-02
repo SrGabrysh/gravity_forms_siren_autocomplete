@@ -49,8 +49,9 @@ class SirenClient {
 	 */
 	private function get_api_key() {
 		// Priorité 1 : Constante dans wp-config.php.
-		if ( defined( Constants::API_KEY_CONSTANT ) && constant( Constants::API_KEY_CONSTANT ) ) {
-			return constant( Constants::API_KEY_CONSTANT );
+		$constant_name = Constants::API_KEY_CONSTANT; // 'GF_SIREN_API_KEY'
+		if ( defined( $constant_name ) && constant( $constant_name ) ) {
+			return constant( $constant_name );
 		}
 
 		// Priorité 2 : Option WordPress.
