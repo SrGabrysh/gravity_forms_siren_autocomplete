@@ -29,7 +29,7 @@ class Plugin {
 	/**
 	 * Version du plugin
 	 */
-	const VERSION = '1.0.4';
+	const VERSION = '1.0.6';
 
 	/**
 	 * Instance du logger
@@ -234,12 +234,65 @@ class Plugin {
 
 		add_option( Constants::SETTINGS_OPTION, $default_settings );
 
+		// Installer la configuration par défaut du formulaire ID: 1.
+		self::install_default_form_mapping();
+
 		// Flush rewrite rules.
 		flush_rewrite_rules();
 
 		// Log.
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			error_log( '[gravity-forms-siren-autocomplete] Plugin activé avec succès.' );
+		}
+	}
+
+	/**
+	 * Installe la configuration par défaut du formulaire ID: 1
+	 */
+	private static function install_default_form_mapping() {
+		// Configuration du mapping pour le formulaire ID: 1.
+		$form_mapping_config = array(
+			'form_id'         => 1,
+			'form_name'       => 'Test de positionnement Révélation Digitale',
+			'enable_plugin'   => true,
+			'enable_button'   => true,
+			'button_position' => 'after',
+			'siret'           => '1',
+			'denomination'    => '12',
+			'adresse'         => '8.1',
+			'ville'           => '8.3',
+			'code_postal'     => '8.5',
+			'pays'            => '8.6',
+			'mentions_legales'=> '13',
+			'prenom'          => '7.3',
+			'nom'             => '7.6',
+			'forme_juridique' => '',
+			'code_ape'        => '',
+			'libelle_ape'     => '',
+			'date_creation'   => '',
+			'statut_actif'    => '',
+			'type_entreprise' => '',
+		);
+
+		// Récupérer les settings actuels.
+		$settings = get_option( Constants::SETTINGS_OPTION, array() );
+
+		// Ajouter le mapping s'il n'existe pas déjà.
+		if ( ! isset( $settings['form_mappings'] ) ) {
+			$settings['form_mappings'] = array();
+		}
+
+		// N'installer que si le mapping n'existe pas encore.
+		if ( ! isset( $settings['form_mappings'][1] ) ) {
+			$settings['form_mappings'][1] = $form_mapping_config;
+
+			// Sauvegarder.
+			update_option( Constants::SETTINGS_OPTION, $settings );
+
+			// Log.
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( '[gravity-forms-siren-autocomplete] Mapping du formulaire ID: 1 installé automatiquement.' );
+			}
 		}
 	}
 
