@@ -97,12 +97,9 @@ class AdminManager {
 		// Toujours utiliser manage_options pour éviter les problèmes de permissions.
 		$capability = Constants::ADMIN_CAPABILITY;
 		
-		// Si Gravity Forms est actif, ajouter comme sous-menu de GF.
-		if ( class_exists( 'GFForms' ) ) {
-			$parent_slug = 'gf_edit_forms';
-		} else {
-			$parent_slug = 'options-general.php';
-		}
+		// TOUJOURS ajouter sous Réglages pour éviter les problèmes de permissions avec Gravity Forms
+		// L'utilisateur admin aura toujours accès au menu Réglages
+		$parent_slug = 'options-general.php';
 
 		// Page principale : Configuration.
 		add_submenu_page(
