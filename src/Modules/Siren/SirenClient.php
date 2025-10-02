@@ -38,8 +38,10 @@ class SirenClient {
 	 * @param object $logger Instance du logger.
 	 */
 	public function __construct( $api_key = null, $logger = null ) {
-		$this->api_key = $api_key ?? $this->get_api_key();
+		// ⚠️ IMPORTANT : Assigner le logger AVANT d'appeler get_api_key()
+		// pour que les logs de débogage fonctionnent correctement
 		$this->logger  = $logger;
+		$this->api_key = $api_key ?? $this->get_api_key();
 	}
 
 	/**
