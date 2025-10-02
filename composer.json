@@ -1,0 +1,45 @@
+{
+  "name": "tb-web/gravity-forms-siren-autocomplete",
+  "description": "Interroge l'API Siren pour récupérer les informations d'entreprise via un SIRET et génère des mentions légales formatées selon le type d'entreprise.",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "keywords": [
+    "wordpress",
+    "plugin",
+    "gravity-forms",
+    "siren",
+    "siret",
+    "api",
+    "mentions-legales"
+  ],
+  "authors": [
+    {
+      "name": "TB-Web",
+      "homepage": "https://tb-web.fr"
+    }
+  ],
+  "require": {
+    "php": ">=7.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.0",
+    "wp-coding-standards/wpcs": "^3.0",
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "GFSirenAutocomplete\\": "src/"
+    }
+  },
+  "scripts": {
+    "cs:lint": "phpcs --standard=phpcs.xml.dist --extensions=php src",
+    "cs:fix": "phpcbf --standard=phpcs.xml.dist --extensions=php src",
+    "test:unit": "phpunit tests/Unit",
+    "test:unit:coverage": "phpunit --coverage-html tests/coverage tests/Unit"
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  }
+}

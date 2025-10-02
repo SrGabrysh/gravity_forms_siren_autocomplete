@@ -1,0 +1,38 @@
+# WordPress
+wp-config.php
+wp-content/uploads/
+wp-content/cache/
+wp-content/backups/
+
+# Composer
+/vendor/
+composer.lock
+
+# Node
+node_modules/
+package-lock.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests
+/tests/reports/
+/tests/coverage/
+/tests/.phpunit.result.cache
+
+# Logs
+*.log
+error_log
+debug.log
+
+# Environnement
+.env
+.env.local
