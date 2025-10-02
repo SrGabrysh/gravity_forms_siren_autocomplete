@@ -97,8 +97,12 @@ class AdminManager {
 		// Si Gravity Forms est actif, ajouter comme sous-menu de GF.
 		if ( class_exists( 'GFForms' ) ) {
 			$parent_slug = 'gf_edit_forms';
+			// Utiliser la capability de Gravity Forms pour compatibilité.
+			$capability = 'gravityforms_edit_forms';
 		} else {
 			$parent_slug = 'options-general.php';
+			// Utiliser la capability WordPress standard.
+			$capability = Constants::ADMIN_CAPABILITY;
 		}
 
 		// Page principale : Configuration.
@@ -106,7 +110,7 @@ class AdminManager {
 			$parent_slug,
 			__( 'Siren Autocomplete', Constants::TEXT_DOMAIN ),
 			__( 'Siren Autocomplete', Constants::TEXT_DOMAIN ),
-			Constants::ADMIN_CAPABILITY,
+			$capability,
 			Constants::ADMIN_MENU_SLUG,
 			array( $this->settings_page, 'render' )
 		);
@@ -116,7 +120,7 @@ class AdminManager {
 			$parent_slug,
 			__( 'Logs - Siren Autocomplete', Constants::TEXT_DOMAIN ),
 			__( 'Logs Siren', Constants::TEXT_DOMAIN ),
-			Constants::ADMIN_CAPABILITY,
+			$capability,
 			Constants::ADMIN_MENU_SLUG . '-logs',
 			array( $this->logs_viewer, 'render' )
 		);
