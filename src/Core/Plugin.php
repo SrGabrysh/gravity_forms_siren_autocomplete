@@ -30,7 +30,7 @@ class Plugin {
 	/**
 	 * Version du plugin
 	 */
-	const VERSION = '1.0.11';
+	const VERSION = '1.0.13';
 
 	/**
 	 * Instance du logger

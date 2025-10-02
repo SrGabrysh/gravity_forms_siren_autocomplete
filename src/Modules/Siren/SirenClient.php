@@ -131,13 +131,13 @@ class SirenClient {
 					$this->log( 'INFO', 'Données JSON reçues avec succès' );
 					return $data;
 
-				case 400:
-					$this->log( 'ERROR', "Données invalides (400): {$body}" );
-					return new \WP_Error( 'invalid_data', __( 'Les données fournies sont invalides.', Constants::TEXT_DOMAIN ), array( 'status' => 400 ) );
+			case 400:
+				$this->log( 'ERROR', "Données invalides (400): {$body}" );
+				return new \WP_Error( 'invalid_data', __( 'Le SIRET fourni est invalide ou mal formaté.', Constants::TEXT_DOMAIN ), array( 'status' => 400 ) );
 
-				case 404:
-					$this->log( 'WARNING', "Ressource non trouvée (404): {$body}" );
-					return new \WP_Error( 'not_found', __( 'Aucune entreprise trouvée avec ce SIRET.', Constants::TEXT_DOMAIN ), array( 'status' => 404 ) );
+			case 404:
+				$this->log( 'WARNING', "Ressource non trouvée (404): {$body}" );
+				return new \WP_Error( 'not_found', __( 'Aucune entreprise trouvée avec ce SIRET. Veuillez vérifier le numéro saisi.', Constants::TEXT_DOMAIN ), array( 'status' => 404 ) );
 
 			case 500:
 			case 502:

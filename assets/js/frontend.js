@@ -13,6 +13,21 @@
      */
     init: function () {
       this.bindEvents();
+      this.initRepresentantWatchers();
+    },
+    
+    /**
+     * Initialise la surveillance des champs Prénom/Nom
+     */
+    initRepresentantWatchers: function () {
+      const self = this;
+      // Surveiller tous les formulaires contenant un bouton de vérification
+      $(".gf-siren-verify-button").each(function () {
+        const formId = $(this).data("form-id");
+        if (formId) {
+          self.watchRepresentantFields(formId);
+        }
+      });
     },
 
     /**
@@ -56,9 +71,10 @@
         return;
       }
 
-      // Récupérer les données du représentant (si mappées)
-      const prenomValue = this.getRepresentantField(formId, "prenom");
-      const nomValue = this.getRepresentantField(formId, "nom");
+      // Récupérer les données du représentant depuis les champs spécifiques
+      // Champ 7.3 = Prénom, Champ 7.6 = Nom
+      const prenomValue = $("#input_" + formId + "_7_3").val() || "";
+      const nomValue = $("#input_" + formId + "_7_6").val() || "";
 
       // Désactiver le bouton et afficher le loader
       $button.prop("disabled", true);
@@ -138,13 +154,31 @@
     },
 
     /**
-     * Récupère la valeur d'un champ représentant
+     * Met à jour les mentions légales avec le nom du représentant
      */
-    getRepresentantField: function (formId, type) {
-      // Cette fonction suppose que les champs sont mappés
-      // En production, il faudrait récupérer le mapping depuis PHP
-      const $field = $('input[name*="' + type + '"]').first();
-      return $field.length ? $field.val() : "";
+    updateMentionsWithRepresentant: function (formId) {
+      const prenomValue = $("#input_" + formId + "_7_3").val() || "";
+      const nomValue = $("#input_" + formId + "_7_6").val() || "";
+      const $mentionsField = $("#input_" + formId + "_13"); // Champ mentions légales
+
+      if ($mentionsField.length && prenomValue && nomValue) {
+        let mentions = $mentionsField.val();
+        const representant = prenomValue + " " + nomValue;
+        
+        // Remplacer {REPRESENTANT} par le nom complet
+        mentions = mentions.replace("{REPRESENTANT}", representant);
+        $mentionsField.val(mentions).trigger("change");
+      }
+    },
+
+    /**
+     * Surveille les changements sur les champs Prénom/Nom
+     */
+    watchRepresentantFields: function (formId) {
+      const self = this;
+      $("#input_" + formId + "_7_3, #input_" + formId + "_7_6").on("change keyup", function () {
+        self.updateMentionsWithRepresentant(formId);
+      });
     },
 
     /**
