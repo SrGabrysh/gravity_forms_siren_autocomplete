@@ -28,7 +28,7 @@ class SirenValidator {
 	}
 
 	/**
-	 * Valide le format d'un numéro SIRET (14 chiffres)
+	 * Valide le format d'un numéro SIRET (14 chiffres + clé de Luhn)
 	 *
 	 * @param string $siret Le SIRET à valider.
 	 * @return bool True si valide, false sinon.
@@ -43,7 +43,36 @@ class SirenValidator {
 			return false;
 		}
 
-		return true;
+		// Valider la clé de Luhn.
+		return $this->validate_luhn( $siret );
+	}
+
+	/**
+	 * Valide un numéro selon l'algorithme de Luhn
+	 *
+	 * @param string $number Le numéro à valider.
+	 * @return bool True si valide, false sinon.
+	 */
+	private function validate_luhn( $number ) {
+		$sum = 0;
+		$length = strlen( $number );
+		
+		for ( $i = 0; $i < $length; $i++ ) {
+			$digit = (int) $number[ $i ];
+			
+			// Les positions impaires (0, 2, 4...) restent telles quelles
+			// Les positions paires (1, 3, 5...) sont multipliées par 2
+			if ( $i % 2 === 1 ) {
+				$digit *= 2;
+				if ( $digit > 9 ) {
+					$digit -= 9;
+				}
+			}
+			
+			$sum += $digit;
+		}
+		
+		return ( $sum % 10 === 0 );
 	}
 
 	/**
@@ -131,11 +160,21 @@ class SirenValidator {
 	public function validate_siret_complete( $siret ) {
 		$cleaned = $this->clean_siret( $siret );
 
-		if ( ! $this->validate_siret( $cleaned ) ) {
+		// Vérifier le format (14 chiffres).
+		if ( ! preg_match( '/^\d{14}$/', $cleaned ) ) {
 			return array(
 				'valid'   => false,
 				'cleaned' => $cleaned,
 				'message' => __( 'Le SIRET doit contenir exactement 14 chiffres.', Constants::TEXT_DOMAIN ),
+			);
+		}
+
+		// Vérifier la clé de Luhn.
+		if ( ! $this->validate_luhn( $cleaned ) ) {
+			return array(
+				'valid'   => false,
+				'cleaned' => $cleaned,
+				'message' => __( 'Le SIRET fourni est invalide (clé de vérification incorrecte).', Constants::TEXT_DOMAIN ),
 			);
 		}
 

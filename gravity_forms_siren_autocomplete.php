@@ -3,7 +3,7 @@
  * Plugin Name: Gravity Forms Siren Autocomplete
  * Plugin URI: https://github.com/SrGabrysh/gravity-forms-siren-autocomplete
  * Description: Interroge l'API Siren pour récupérer les informations d'entreprise via un SIRET et génère des mentions légales formatées selon le type d'entreprise.
- * Version: 1.0.20
+ * Version: 1.0.22
  * Author: TB-Web
  * Author URI: https://tb-web.fr
  * License: GPL v2 or later
@@ -20,7 +20,7 @@
 defined( 'ABSPATH' ) || exit;
 
 // Constantes du plugin.
-define( 'GRAVITY_FORMS_SIREN_AUTOCOMPLETE_VERSION', '1.0.20' );
+define( 'GRAVITY_FORMS_SIREN_AUTOCOMPLETE_VERSION', '1.0.22' );
 define( 'GRAVITY_FORMS_SIREN_AUTOCOMPLETE_PLUGIN_FILE', __FILE__ );
 define( 'GRAVITY_FORMS_SIREN_AUTOCOMPLETE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GRAVITY_FORMS_SIREN_AUTOCOMPLETE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

@@ -154,7 +154,7 @@ class GFButtonInjector {
 		return array(
 			'verifying'          => __( 'Vérification en cours...', Constants::TEXT_DOMAIN ),
 			'success'            => __( 'Entreprise trouvée : %s', Constants::TEXT_DOMAIN ),
-			'error_invalid'      => __( 'Le SIRET doit contenir exactement 14 chiffres.', Constants::TEXT_DOMAIN ),
+			'error_invalid'      => __( 'Le SIRET fourni est invalide (format ou clé de vérification incorrecte).', Constants::TEXT_DOMAIN ),
 			'error_not_found'    => __( 'Aucune entreprise trouvée avec ce SIRET.', Constants::TEXT_DOMAIN ),
 			'error_api'          => __( 'Erreur lors de la vérification. Veuillez réessayer.', Constants::TEXT_DOMAIN ),
 			'error_timeout'      => __( 'La vérification a pris trop de temps. Veuillez réessayer.', Constants::TEXT_DOMAIN ),

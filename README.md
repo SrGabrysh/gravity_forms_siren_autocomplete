@@ -1,6 +1,6 @@
 # Gravity Forms Siren Autocomplete
 
-**Version:** 1.0.20  
+**Version:** 1.0.22  
 **Auteur:** TB-Web  
 **Licence:** GPL v2 or later
 
@@ -54,13 +54,20 @@ Plugin WordPress qui s'intègre avec Gravity Forms pour :
 
 ### Configuration de la clé API
 
-**Méthode recommandée** (wp-config.php) :
+**Méthode recommandée** : Via l'interface d'administration du plugin
+
+1. Accédez à **Formulaires → Siren Autocomplete**
+2. Entrez votre clé API dans le champ dédié
+3. Cliquez sur "Enregistrer les modifications"
+4. Testez la connexion avec le bouton "Tester la connexion API"
+
+**Méthode alternative (wp-config.php)** :
+
+> ⚠️ **Note importante** : En raison d'un problème de chargement de `wp-config.php` dans le contexte AJAX de WordPress, cette méthode peut ne pas fonctionner correctement. Nous recommandons d'utiliser l'interface d'administration.
 
 ```php
 define( 'GF_SIREN_API_KEY', 'votre_cle_api_ici' );
 ```
-
-**Méthode alternative** : Via l'interface d'administration du plugin
 
 ## ⚙️ Configuration
 
