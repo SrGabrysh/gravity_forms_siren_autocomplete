@@ -69,6 +69,7 @@ class AjaxHandler {
 		add_action( 'wp_ajax_' . Constants::AJAX_CLEAR_CACHE, array( $this, 'handle_clear_cache' ) );
 		add_action( 'wp_ajax_' . Constants::AJAX_GET_LOGS, array( $this, 'handle_get_logs' ) );
 		add_action( 'wp_ajax_' . Constants::AJAX_EXPORT_LOGS, array( $this, 'handle_export_logs' ) );
+		add_action( 'wp_ajax_' . Constants::AJAX_LOAD_FORM_FIELDS, array( $this, 'handle_load_form_fields' ) );
 	}
 
 	/**
@@ -268,6 +269,73 @@ class AjaxHandler {
 
 		fclose( $output );
 		exit;
+	}
+
+	/**
+	 * Charge les champs d'un formulaire Gravity Forms et son mapping existant (admin)
+	 */
+	public function handle_load_form_fields() {
+		// Vérifier le nonce et les permissions.
+		$nonce = $_POST['nonce'] ?? '';
+
+		if ( ! SecurityHelper::verify_ajax_request( $nonce ) ) {
+			SecurityHelper::die_json_error( __( 'Permissions insuffisantes.', Constants::TEXT_DOMAIN ), 403 );
+		}
+
+		$form_id = isset( $_POST['form_id'] ) ? absint( $_POST['form_id'] ) : 0;
+
+		if ( ! $form_id ) {
+			SecurityHelper::die_json_error( __( 'ID de formulaire manquant.', Constants::TEXT_DOMAIN ), 400 );
+		}
+
+		// Vérifier que Gravity Forms est actif.
+		if ( ! class_exists( 'GFAPI' ) ) {
+			SecurityHelper::die_json_error( __( 'Gravity Forms n\'est pas actif.', Constants::TEXT_DOMAIN ), 400 );
+		}
+
+		// Récupérer le formulaire.
+		$form = \GFAPI::get_form( $form_id );
+
+		if ( ! $form ) {
+			SecurityHelper::die_json_error( __( 'Formulaire introuvable.', Constants::TEXT_DOMAIN ), 404 );
+		}
+
+		// Récupérer les champs du formulaire.
+		$fields = array();
+		if ( ! empty( $form['fields'] ) ) {
+			foreach ( $form['fields'] as $field ) {
+				$field_id = $field->id;
+				$label    = $field->label;
+
+				// Pour les champs composites (adresse, nom), ajouter les sous-champs.
+				if ( ! empty( $field->inputs ) ) {
+					foreach ( $field->inputs as $input ) {
+						$fields[] = array(
+							'id'    => (string) $input['id'],
+							'label' => $label . ' - ' . $input['label'],
+						);
+					}
+				} else {
+					$fields[] = array(
+						'id'    => (string) $field_id,
+						'label' => $label,
+					);
+				}
+			}
+		}
+
+		// Récupérer le mapping existant pour ce formulaire.
+		$settings       = get_option( Constants::SETTINGS_OPTION, array() );
+		$form_mappings  = $settings['form_mappings'] ?? array();
+		$current_mapping = $form_mappings[ $form_id ] ?? array();
+
+		// Retourner les données.
+		wp_send_json_success(
+			array(
+				'fields'  => $fields,
+				'mapping' => $current_mapping,
+			)
+		);
 	}
 }
 

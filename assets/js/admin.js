@@ -14,6 +14,7 @@
     init: function () {
       this.bindEvents();
       this.initTabs();
+      this.autoLoadExistingMapping();
     },
 
     /**
@@ -55,6 +56,26 @@
         $(".tab-content").hide();
         $(tabId).show();
       });
+    },
+
+    /**
+     * Charge automatiquement le mapping existant (ex: formulaire 1)
+     */
+    autoLoadExistingMapping: function () {
+      // Vérifier si un formulaire avec un mapping existe (ex: formulaire 1)
+      const $formSelect = $("#form_select");
+      
+      // Si le select de formulaire a au moins 2 options (l'option vide + un formulaire)
+      if ($formSelect.find("option").length > 1) {
+        // Sélectionner le premier formulaire disponible (index 1)
+        const firstFormId = $formSelect.find("option").eq(1).val();
+        
+        if (firstFormId) {
+          $formSelect.val(firstFormId);
+          // Déclencher le changement pour charger les champs
+          this.populateFieldSelects(firstFormId);
+        }
+      }
     },
 
     /**
@@ -162,11 +183,13 @@
         return;
       }
 
-      // Dans un cas réel, on chargerait les champs via AJAX
-      // Pour simplifier, on affiche juste la section
+      // Afficher un loader
       $("#gf-siren-mapping-fields").show();
+      $(".gf-field-select").html(
+        '<option value="">Chargement...</option>'
+      ).prop("disabled", true);
 
-      // Charger les champs du formulaire (appel AJAX à implémenter)
+      // Charger les champs via AJAX
       this.populateFieldSelects(formId);
     },
 
@@ -174,10 +197,63 @@
      * Remplit les selects avec les champs du formulaire
      */
     populateFieldSelects: function (formId) {
-      // Cette fonction devrait charger les champs via AJAX
-      // Pour l'instant, elle est laissée vide car elle nécessite
-      // l'API Gravity Forms
-      console.log("Loading fields for form ID:", formId);
+      $.ajax({
+        url: gfSirenAdmin.ajax_url,
+        type: "POST",
+        data: {
+          action: "gf_siren_load_form_fields",
+          nonce: gfSirenAdmin.nonce,
+          form_id: formId,
+        },
+        success: (response) => {
+          if (response.success) {
+            const fields = response.data.fields;
+            const mapping = response.data.mapping;
+
+            // Remplir tous les selects avec les champs disponibles
+            $(".gf-field-select").each(function () {
+              const $select = $(this);
+              const fieldKey = $select
+                .attr("name")
+                .match(/\[mapping\]\[(.+)\]/)[1];
+
+              // Vider et réactiver le select
+              $select
+                .html('<option value="">-- Non mappé --</option>')
+                .prop("disabled", false);
+
+              // Ajouter les options
+              fields.forEach((field) => {
+                $select.append(
+                  $("<option>", {
+                    value: field.id,
+                    text: field.label + " (ID: " + field.id + ")",
+                  })
+                );
+              });
+
+              // Pré-sélectionner la valeur existante du mapping
+              if (mapping && mapping[fieldKey]) {
+                $select.val(mapping[fieldKey]);
+              }
+            });
+          } else {
+            alert(
+              "Erreur lors du chargement des champs: " +
+                (response.data.message || "Erreur inconnue")
+            );
+            $(".gf-field-select")
+              .html('<option value="">Erreur de chargement</option>')
+              .prop("disabled", false);
+          }
+        },
+        error: () => {
+          alert("Erreur lors du chargement des champs du formulaire.");
+          $(".gf-field-select")
+            .html('<option value="">Erreur de chargement</option>')
+            .prop("disabled", false);
+        },
+      });
     },
   };
 

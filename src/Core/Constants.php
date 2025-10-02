@@ -117,6 +117,7 @@ class Constants {
 	const AJAX_CLEAR_CACHE = 'gf_siren_clear_cache';
 	const AJAX_GET_LOGS = 'gf_siren_get_logs';
 	const AJAX_EXPORT_LOGS = 'gf_siren_export_logs';
+	const AJAX_LOAD_FORM_FIELDS = 'gf_siren_load_form_fields';
 
 	/**
 	 * Nonce pour les requêtes AJAX
