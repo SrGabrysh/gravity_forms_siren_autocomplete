@@ -15,7 +15,7 @@
       this.bindEvents();
       this.initRepresentantWatchers();
     },
-    
+
     /**
      * Initialise la surveillance des champs Prénom/Nom
      */
@@ -125,7 +125,12 @@
         error: (xhr) => {
           let errorMsg = gfSirenData.messages.error_api;
 
-          if (xhr.status === 404) {
+          // Priorité 1 : Lire le message d'erreur du backend si disponible
+          if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+            errorMsg = xhr.responseJSON.data.message;
+          }
+          // Priorité 2 : Messages par défaut selon code HTTP
+          else if (xhr.status === 404) {
             errorMsg = gfSirenData.messages.error_not_found;
           } else if (xhr.status === 408 || xhr.statusText === "timeout") {
             errorMsg = gfSirenData.messages.error_timeout;
@@ -164,7 +169,7 @@
       if ($mentionsField.length && prenomValue && nomValue) {
         let mentions = $mentionsField.val();
         const representant = prenomValue + " " + nomValue;
-        
+
         // Remplacer {REPRESENTANT} par le nom complet
         mentions = mentions.replace("{REPRESENTANT}", representant);
         $mentionsField.val(mentions).trigger("change");
@@ -176,9 +181,12 @@
      */
     watchRepresentantFields: function (formId) {
       const self = this;
-      $("#input_" + formId + "_7_3, #input_" + formId + "_7_6").on("change keyup", function () {
-        self.updateMentionsWithRepresentant(formId);
-      });
+      $("#input_" + formId + "_7_3, #input_" + formId + "_7_6").on(
+        "change keyup",
+        function () {
+          self.updateMentionsWithRepresentant(formId);
+        }
+      );
     },
 
     /**
