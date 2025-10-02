@@ -10,6 +10,7 @@ namespace GFSirenAutocomplete\Core;
 defined( 'ABSPATH' ) || exit;
 
 use GFSirenAutocomplete\Admin\AdminManager;
+use GFSirenAutocomplete\Admin\AjaxHandler;
 use GFSirenAutocomplete\Modules\Siren\SirenManager;
 use GFSirenAutocomplete\Modules\MentionsLegales\MentionsManager;
 use GFSirenAutocomplete\Modules\GravityForms\GFManager;
@@ -72,6 +73,7 @@ class Plugin {
 	private function __construct() {
 		$this->init_core();
 		$this->init_modules();
+		$this->init_ajax(); // AJAX hooks doivent être enregistrés pour frontend ET admin.
 		$this->init_hooks();
 
 		if ( is_admin() ) {
@@ -112,6 +114,15 @@ class Plugin {
 
 		// Module Gravity Forms.
 		$this->gf_manager = new GFManager( $this->siren_manager, $this->mentions_manager, $this->logger );
+	}
+
+	/**
+	 * Initialisation des hooks AJAX (frontend + admin)
+	 */
+	private function init_ajax() {
+		// Créer l'Ajax Handler (besoin du siren_manager et gf_manager).
+		$ajax_handler = new AjaxHandler( $this->siren_manager, $this->gf_manager, $this->logger );
+		$ajax_handler->init_hooks();
 	}
 
 	/**
