@@ -72,7 +72,13 @@
         
         if (firstFormId) {
           $formSelect.val(firstFormId);
-          // Déclencher le changement pour charger les champs
+          // Afficher le conteneur des champs de mapping
+          $("#gf-siren-mapping-fields").show();
+          // Afficher un loader dans les selects
+          $(".gf-field-select")
+            .html('<option value="">Chargement...</option>')
+            .prop("disabled", true);
+          // Charger les champs via AJAX
           this.populateFieldSelects(firstFormId);
         }
       }
@@ -185,9 +191,9 @@
 
       // Afficher un loader
       $("#gf-siren-mapping-fields").show();
-      $(".gf-field-select").html(
-        '<option value="">Chargement...</option>'
-      ).prop("disabled", true);
+      $(".gf-field-select")
+        .html('<option value="">Chargement...</option>')
+        .prop("disabled", true);
 
       // Charger les champs via AJAX
       this.populateFieldSelects(formId);

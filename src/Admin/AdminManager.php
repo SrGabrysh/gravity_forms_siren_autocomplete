@@ -145,7 +145,7 @@ class AdminManager {
 			'gf-siren-admin',
 			plugin_dir_url( GRAVITY_FORMS_SIREN_AUTOCOMPLETE_PLUGIN_FILE ) . 'assets/css/admin.css',
 			array(),
-			'1.0.29'
+			'1.0.30'
 		);
 
 		// Enqueue JS admin.
@@ -153,7 +153,7 @@ class AdminManager {
 			'gf-siren-admin',
 			plugin_dir_url( GRAVITY_FORMS_SIREN_AUTOCOMPLETE_PLUGIN_FILE ) . 'assets/js/admin.js',
 			array( 'jquery' ),
-			'1.0.29',
+			'1.0.30',
 			true
 		);
 
