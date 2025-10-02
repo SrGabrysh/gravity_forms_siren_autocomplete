@@ -131,7 +131,7 @@ class Constants {
 	/**
 	 * Slug du menu admin
 	 */
-	const ADMIN_MENU_SLUG = 'gf-siren-autocomplete';
+	const ADMIN_MENU_SLUG = 'gf-siren-settings';
 
 	/**
 	 * Text domain pour la traduction
