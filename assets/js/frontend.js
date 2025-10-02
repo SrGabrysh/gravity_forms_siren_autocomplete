@@ -126,7 +126,11 @@
           let errorMsg = gfSirenData.messages.error_api;
 
           // Priorité 1 : Lire le message d'erreur du backend si disponible
-          if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+          if (
+            xhr.responseJSON &&
+            xhr.responseJSON.data &&
+            xhr.responseJSON.data.message
+          ) {
             errorMsg = xhr.responseJSON.data.message;
           }
           // Priorité 2 : Messages par défaut selon code HTTP

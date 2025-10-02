@@ -48,24 +48,32 @@ class SirenClient {
 	 * @return string|null La clé API ou null si non trouvée.
 	 */
 	private function get_api_key() {
-		// ⚠️ HARDCODED TEMPORAIREMENT POUR DEBUG
-		// Cette clé sera retirée après identification du problème
-		$hardcoded_key = 'FlwM9Symg1SIox2WYRSN2vhRmCCwRXal';
-		if ( ! empty( $hardcoded_key ) ) {
-			$this->log( 'DEBUG', 'Utilisation de la clé API hardcodée (mode debug)' );
-			return $hardcoded_key;
-		}
-		
 		// Priorité 1 : Constante dans wp-config.php.
 		$constant_name = Constants::API_KEY_CONSTANT; // 'GF_SIREN_API_KEY'
+		
+		// Log détaillé pour debug
+		$this->log( 'DEBUG', "Tentative de lecture de la clé API depuis wp-config.php", array(
+			'constant_name' => $constant_name,
+			'defined' => defined( $constant_name ) ? 'OUI' : 'NON',
+			'value_exists' => defined( $constant_name ) && constant( $constant_name ) ? 'OUI' : 'NON',
+		) );
+		
 		if ( defined( $constant_name ) && constant( $constant_name ) ) {
+			$this->log( 'INFO', 'Clé API lue depuis wp-config.php avec succès' );
 			return constant( $constant_name );
 		}
 
 		// Priorité 2 : Option WordPress.
+		$this->log( 'DEBUG', 'Constante non trouvée, tentative via option WordPress' );
 		$api_key = get_option( Constants::API_KEY_OPTION, '' );
-
-		return ! empty( $api_key ) ? $api_key : null;
+		
+		if ( ! empty( $api_key ) ) {
+			$this->log( 'INFO', 'Clé API lue depuis option WordPress' );
+			return $api_key;
+		}
+		
+		$this->log( 'ERROR', 'Aucune clé API trouvée (ni constante, ni option)' );
+		return null;
 	}
 
 	/**
