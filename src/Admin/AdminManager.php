@@ -94,15 +94,14 @@ class AdminManager {
 	 * Ajoute le menu dans l'administration WordPress
 	 */
 	public function add_admin_menu() {
+		// Toujours utiliser manage_options pour éviter les problèmes de permissions.
+		$capability = Constants::ADMIN_CAPABILITY;
+		
 		// Si Gravity Forms est actif, ajouter comme sous-menu de GF.
 		if ( class_exists( 'GFForms' ) ) {
 			$parent_slug = 'gf_edit_forms';
-			// Utiliser la capability de Gravity Forms pour compatibilité.
-			$capability = 'gravityforms_edit_forms';
 		} else {
 			$parent_slug = 'options-general.php';
-			// Utiliser la capability WordPress standard.
-			$capability = Constants::ADMIN_CAPABILITY;
 		}
 
 		// Page principale : Configuration.

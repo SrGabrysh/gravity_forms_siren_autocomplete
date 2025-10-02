@@ -48,7 +48,7 @@
 
       // Récupérer la valeur du SIRET
       const siretValue = $(
-        "#input_" + formId + "_" + fieldId.replace(".", "_")
+        "#input_" + formId + "_" + String(fieldId).replace(".", "_")
       ).val();
 
       if (!siretValue || siretValue.trim() === "") {
