@@ -287,10 +287,13 @@ class TrackingAdmin {
 
 		$all_forms = \GFAPI::get_forms();
 
+		// GFAPI::get_forms() retourne un tableau d'OBJETS, pas d'arrays
 		return array_filter(
 			$all_forms,
 			function( $form ) use ( $tracked_forms_ids ) {
-				return in_array( (int) $form['id'], $tracked_forms_ids, true );
+				// Utiliser $form->id au lieu de $form['id'] car c'est un objet
+				$form_id = isset( $form['id'] ) ? (int) $form['id'] : ( isset( $form->id ) ? (int) $form->id : 0 );
+				return in_array( $form_id, $tracked_forms_ids, true );
 			}
 		);
 	}
